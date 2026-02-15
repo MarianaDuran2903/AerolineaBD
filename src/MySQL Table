@@ -1,0 +1,57 @@
+CREATE DATABASE IF NOT EXISTS aerolinea_db;
+USE aerolinea_db;
+
+CREATE TABLE base (
+  codigo VARCHAR(10) PRIMARY KEY,
+  nombre VARCHAR(80) NOT NULL
+);
+
+CREATE TABLE avion (
+  num_cola VARCHAR(15) PRIMARY KEY,
+  tipo VARCHAR(30) NOT NULL,
+  base_codigo VARCHAR(10) NOT NULL,
+  horas_regreso INT NOT NULL,
+  CONSTRAINT fk_avion_base FOREIGN KEY (base_codigo) REFERENCES base(codigo)
+);
+
+CREATE TABLE piloto (
+  codigo VARCHAR(15) PRIMARY KEY,
+  nombre VARCHAR(80) NOT NULL,
+  horas_vuelo INT NOT NULL,
+  base_codigo VARCHAR(10) NOT NULL,
+  CONSTRAINT fk_piloto_base FOREIGN KEY (base_codigo) REFERENCES base(codigo)
+);
+
+CREATE TABLE tripulante (
+  codigo VARCHAR(15) PRIMARY KEY,
+  nombre VARCHAR(80) NOT NULL,
+  base_codigo VARCHAR(10) NOT NULL,
+  CONSTRAINT fk_tripulante_base FOREIGN KEY (base_codigo) REFERENCES base(codigo)
+);
+
+CREATE TABLE tripulante_telefono (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  tripulante_codigo VARCHAR(15) NOT NULL,
+  telefono VARCHAR(30) NOT NULL,
+  CONSTRAINT fk_tel_trip FOREIGN KEY (tripulante_codigo) REFERENCES tripulante(codigo)
+);
+
+CREATE TABLE vuelo (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  numero_vuelo VARCHAR(15) NOT NULL,
+  origen VARCHAR(10) NOT NULL,
+  destino VARCHAR(10) NOT NULL,
+  fecha_hora DATETIME NOT NULL,
+  num_cola VARCHAR(15) NOT NULL,
+  piloto_codigo VARCHAR(15) NOT NULL,
+  CONSTRAINT fk_vuelo_avion FOREIGN KEY (num_cola) REFERENCES avion(num_cola),
+  CONSTRAINT fk_vuelo_piloto FOREIGN KEY (piloto_codigo) REFERENCES piloto(codigo)
+);
+
+CREATE TABLE vuelo_tripulante (
+  vuelo_id INT NOT NULL,
+  tripulante_codigo VARCHAR(15) NOT NULL,
+  PRIMARY KEY (vuelo_id, tripulante_codigo),
+  CONSTRAINT fk_vt_vuelo FOREIGN KEY (vuelo_id) REFERENCES vuelo(id),
+  CONSTRAINT fk_vt_trip FOREIGN KEY (tripulante_codigo) REFERENCES tripulante(codigo)
+);
